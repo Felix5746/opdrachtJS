@@ -1,13 +1,21 @@
-let error;
-
+let error =[];
+let errorList = document.getElementById("errorsP"); 
 //Bij het drukken op de registreer knop zal de functie validateForm uitgevoerd worden
-
 document.getElementById("registreer").addEventListener("click", validateForm);
 
+//Alerts verbergen
 document.getElementById("errors").hidden = true;
 document.getElementById("succes").hidden = true;
 document.getElementById("betalingsInfo").hidden = true;
 
+//horizontale scrollbar in alert vermijden
+//ChatGPT
+errorList.style.whiteSpace = 'pre-wrap';
+errorList.style.setProperty('overflow-wrap', 'break-word');
+errorList.style.maxWidth = '100%';
+errorList.style.overflow = 'hidden';
+
+//Functie die nagaat of een veld ingevuld is
 function checkEmptyField(veld, melding) {
   if (veld.value.trim() == "") {
     error.push(melding);
@@ -16,15 +24,60 @@ function checkEmptyField(veld, melding) {
   return true;
 }
 
+//Functie die nagaat of het emailaders juist is ingevuld
 function validateEmail(email) {
+  if (checkEmptyField(email, "Het veld email is vereist")) {
+    //ChatGPT
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email.value))
+      error.push("E-mail adres is niet correct");
+  }
+}
+
+//Functie die nagaat of het wachtwoord correct is ingevuld
+function validatePassword(password, rPassword) {
+  let passwordNotEmpty = checkEmptyField(
+    password,
+    "Het veld wachtwoord is vereist"
+  );
+
+  if (password.value.length < 8 && password.value.length != 0)
+    error.push("Je wachtwoord is te kort");
+
+  let rPasswordNotEmpty = checkEmptyField(
+    rPassword,
+    "Het veld herhaal wachtwoord is vereist"
+  );
+  if (rPasswordNotEmpty) {
+    if (password.value != rPassword.value)
+      error.push("Je wachtwoorden komen niet overeen");
+  }
+}
+
+function validateUsername(username) {
   //ChatGPT
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const pattern1 = /^[a-zA-Z0-9_.-]*$/;
+  const pattern2 = /^[a-zA-Z0-9_]/;
+
+  if (checkEmptyField(username, "Het veld gebruikersnaam is vereist")) {
+    if (!pattern1.test(username.value)) {
+      error.push(
+        "De gebruikersnaam mag enkel bestaan uit letters, cijfers, '.', '_', '-'"
+      );
+    }
+    if (!pattern2.test(username.value)) {
+      error.push("De gebruikersnaam mag niet beginnen met een '.' of een '-'");
+    }
+    if (username.value.length < 2) {
+      error.push("De gebruikersnaam moet meer dan 1 karakter bevatten");
+    }
+  }
 }
 
 function validateForm() {
   event.preventDefault();
-  let emailNotEmpty;
+
   error = [];
   document.getElementById("errorsP").textContent = "";
 
@@ -43,21 +96,25 @@ function validateForm() {
   let voorwaarden = document.getElementById("voorwaarden");
   let betaling = document.getElementsByName("betalingswijze");
 
+  //Nagaan of naam, voornaam ingevuld zijn
   checkEmptyField(voornaam, "Het veld voornaam is vereist");
   checkEmptyField(naam, "Het veld naam is vereist");
-  checkEmptyField(gebruikersnaam, "Het veld gebruikersnaam is vereist");
-  emailNotEmpty = checkEmptyField(email, "Het veld email is vereist");
-  checkEmptyField(adres, "Het veld wachtwoord is vereist");
-  checkEmptyField(wachtwoord, "Het veld herhaal wachtwoord is vereist");
-  checkEmptyField(herhaalWachtwoord, "Het veld adres is vereist");
+
+  //Nagaan of de gebruikersnaam correct is ingevuld
+  validateUsername(gebruikersnaam);
+
+  //Nagaan of het e-mailadres correct is opgesteld
+  validateEmail(email);
+
+  //Nagaan of het wachtwoord correct is ingevuld
+  validatePassword(wachtwoord, herhaalWachtwoord);
+
+  //Nagaan of overige verplichte gegevens ingevuld zijn
+  checkEmptyField(adres, "Het veld adres is vereist");
   checkEmptyField(land, "Gelieve een land te selecteren");
   checkEmptyField(provincie, "Gelieve een provincie te selecteren");
 
-  if (emailNotEmpty == true) {
-    if (!validateEmail(email)) {
-      error.push("E-mail adres is niet correct");
-    }
-  }
+  //De juiste alerst tonen na all validatie
   if (error.length == 0) {
     document.getElementById("succes").hidden = false;
     document.getElementById("betalingsInfo").hidden = false;
@@ -68,7 +125,7 @@ function validateForm() {
     document.getElementById("betalingsInfo").hidden = true;
 
     error.forEach((x) => {
-      document.getElementById("errorsP").textContent += x + `\n`;
+      errorList.textContent += x + `\n`;
     });
   }
 }
