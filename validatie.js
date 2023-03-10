@@ -1,5 +1,5 @@
-let error =[];
-let errorList = document.getElementById("errorsP"); 
+let error = [];
+
 //Bij het drukken op de registreer knop zal de functie validateForm uitgevoerd worden
 document.getElementById("registreer").addEventListener("click", validateForm);
 
@@ -8,12 +8,7 @@ document.getElementById("errors").hidden = true;
 document.getElementById("succes").hidden = true;
 document.getElementById("betalingsInfo").hidden = true;
 
-//horizontale scrollbar in alert vermijden
-//ChatGPT
-errorList.style.whiteSpace = 'pre-wrap';
-errorList.style.setProperty('overflow-wrap', 'break-word');
-errorList.style.maxWidth = '100%';
-errorList.style.overflow = 'hidden';
+
 
 //Functie die nagaat of een veld ingevuld is
 function checkEmptyField(veld, melding) {
@@ -79,7 +74,7 @@ function validateForm() {
   event.preventDefault();
 
   error = [];
-  document.getElementById("errorsP").textContent = "";
+  document.querySelector('#errorsP').innerHTML = "";
 
   //Variabelen declareren en elementen inladen
   let voornaam = document.getElementById("voornaam");
@@ -123,9 +118,14 @@ function validateForm() {
     document.getElementById("errors").hidden = false;
     document.getElementById("succes").hidden = true;
     document.getElementById("betalingsInfo").hidden = true;
-
+    
+    //Errors in alert plaatsen
+    let paragraph;
     error.forEach((x) => {
-      errorList.textContent += x + `\n`;
+      paragraph = document.createElement('p');
+      paragraph.textContent = x;
+      paragraph.classList.add('my-1');
+      document.querySelector("#errorsP").appendChild(paragraph);
     });
   }
 }
