@@ -91,11 +91,11 @@ function checkEmptyField(veld, melding) {
 //Functie die nagaat of het emailaders juist is ingevuld
 function validateEmail(email) {
   if (checkEmptyField(email, "Het veld email is vereist")) {
-    //ChatGPT
-    const emailRegex = /^[^\s@]+@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[^\s@]+$/;
+                       
+    const emailRegex = /^[A-Za-z0-9_][._\-A-Za-z0-9]*@[A-Za-z0-9]+[A-Za-z0-9\.\-]*\.[A-Za-z]+/;
 
     if (!emailRegex.test(email.value))
-      error.push("E-mail adres is niet correct");
+      error.push("E-mailadres is niet correct");
   }
 }
 
@@ -121,7 +121,7 @@ function validatePassword(password, rPassword) {
 
 //Functie die nagaat of de gebruikersnaam correct ingevuld is
 function validateUsername(username) {
-  //ChatGPT
+  
   const pattern1 = /^[a-zA-Z0-9_.-]*$/;
   const pattern2 = /^[a-zA-Z0-9_]/;
 
@@ -165,3 +165,5 @@ function checkPc(veld){
     }
   }
 }
+
+
